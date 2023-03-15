@@ -55,7 +55,59 @@ const toggleSpinner = isLoader => {
         spinnerSections.classList.add('d-none')
     }
 }
+document.getElementById('btn_seemore').addEventListener('click', function () {
+    toggleSpinner(true)
+    const loadAiHub = () => {
+        // get data load
+        const URL = `https://openapi.programming-hero.com/api/ai/tools`
+        fetch(URL)
+            .then((res) => res.json())
+            .then((data) => displayData(data.data.tools));
+    }
+    // Display Ai hub
+    const displayData = aiHubs => {
+        const aiContainer = document.getElementById('ai_container')
+        aiContainer.innerHTML = "";
 
+        const seeMore = document.getElementById('see_more');
+        if (aiHubs.length) {
+
+            seeMore.classList.add('d-none')
+        }
+        aiHubs.forEach(aihub => {
+            const aiDiv = document.createElement('div');
+
+            aiDiv.classList.add('col');
+            aiDiv.innerHTML = `
+            <div class="card h-100 p-2">
+                <div class = "p-2 rounded-lg">
+                    <img  src="${aihub.image}" class="card-img-top" alt="..." class="w-100 rounded-lg">
+                </div>
+            <div class="card-body">
+                <h5 class ="fw-bold mb-4 ">Features</h5>
+                <div class ="lh-1 text-secondary">
+                    <p>1. ${aihub.features[0]}</p>
+                    <p>2. ${aihub.features[1]}</p>
+                    <p>3. ${aihub.features[2]}</p>
+                </div>
+            </div>
+            <div class="container d-flex justify-content-between border-top ">
+            <div class="me-5 mt-3">
+            <h5 class ="fw-bold mb-4">${aihub.name}</h5>
+                 <p><i class="fa-solid fa-calendar-check"></i> <span class = "date">${aihub.published_in}</span></p>
+            </div>
+            <div class="ms-5 d-flex justify-content-center align-items-center " >
+            <button type="button" onclick= "loadAiData('${aihub.id}')" class="btn btn-danger rounded "  data-bs-toggle="modal" data-bs-target="#aiHubModal"><i class="fa-solid fa-arrow-right"></i></button>
+       </div>
+         </div>
+          </div>           
+            `;
+            aiContainer.appendChild(aiDiv);
+        });
+        toggleSpinner(false)
+    };
+    loadAiHub()
+});
 
 const loadAiData = id => {
     fetch(`https://openapi.programming-hero.com/api/ai/tool/${id}`)
@@ -63,8 +115,8 @@ const loadAiData = id => {
         .then(data => displayloadAiData(data))
 };
 const displayloadAiData = (aiInfo) => {
-    // console.log(aiInfo.data);
-    // Set daynamic title
+
+    // Set title
     const aiTitle = document.getElementById('ai_title');
     aiTitle.innerText = aiInfo.data.description;
 
@@ -108,7 +160,7 @@ const displayloadAiData = (aiInfo) => {
       <h5 class="card-title text-center fw-bold">${aiInfo.data?.input_output_examples?.[0]?.input ? aiInfo.data.input_output_examples[0].input : "Can you give any Example!!"}</h5>
       <p class="card-text text-center text-muted"><small  class=" text-muted">${aiInfo.data?.input_output_examples?.[0]?.output ? aiInfo.data.input_output_examples[0].output : 'No! Not Yet!! Take a break!!!'}</small></p>
     </div>
-    </div>   `
+    </div>`
 }
 
 
